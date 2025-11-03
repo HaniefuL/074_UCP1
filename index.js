@@ -1,0 +1,41 @@
+const express = require('express')
+const app = express();
+const PORT = 3000;
+const db = require('./models');
+app.use(express.json());
+app.use(express.urlencoded({
+    extended: false
+}));
+
+app.listen(PORT, () => {
+    console.log('Server started on port 3000');
+})
+
+db.sequelize.sync()
+    .then((result) => {
+        app.listen(3000, () => {
+            console.log('Server Started');
+        })
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+
+    app.post("/buku", async (req, res) => {
+        const data = req.body;
+        try {
+            const buku = await db.Buku.create(data);
+            res.send(buku);
+        } catch (err) {
+            res.send(err);
+        }
+    });
+
+    app.get('/buku', async (req, res) => {
+        try {
+            const buku = await db.Buku.findAll();
+            res.send(buku);
+        }catch (err) {
+            res.send(err);
+        }
+    });
